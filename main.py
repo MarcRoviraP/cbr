@@ -26,7 +26,17 @@ casebase = {
     17: {"id": 17, "descripcion": "No detecta USB", "solucion": "Reinstalar drivers USB"},
     18: {"id": 18, "descripcion": "Errores al ejecutar programas", "solucion": "Reinstalar software"},
     19: {"id": 19, "descripcion": "Internet va lento", "solucion": "Comprobar ancho banda"},
-    20: {"id": 20, "descripcion": "Pantalla parpadea", "solucion": "Actualizar drivers vídeo"}
+    20: {"id": 20, "descripcion": "Pantalla parpadea", "solucion": "Actualizar drivers vídeo"},
+    21: {"id": 21, "descripcion": "No se conecta a red WiFi", "solucion": "Olvidar red y reconectar"},
+    22: {"id": 22, "descripcion": "Monitor no se enciende", "solucion": "Comprobar cable HDMI y fuente"},
+    23: {"id": 23, "descripcion": "Tarjeta gráfica con artefactos visuales", "solucion": "Limpiar GPU y revisar ventilación"},
+    24: {"id": 24, "descripcion": "Sistema operativo no inicia", "solucion": "Ejecutar reparación de inicio"},
+    25: {"id": 25, "descripcion": "Azules de pantalla aleatorios", "solucion": "Actualizar BIOS y drivers"},
+    26: {"id": 26, "descripcion": "Sobrecalentamiento constante", "solucion": "Limpiar disipadores y cambiar pasta"},
+    27: {"id": 27, "descripcion": "Aplicaciones se cierran inesperadamente", "solucion": "Verificar integridad del sistema"},
+    28: {"id": 28, "descripcion": "Webcam no funciona", "solucion": "Reinstalar drivers de cámara"},
+    29: {"id": 29, "descripcion": "Micrófono sin sonido", "solucion": "Ajustar niveles de grabación"},
+    30: {"id": 30, "descripcion": "Navegador va muy lento", "solucion": "Limpiar caché y extensiones"},
 }
 
 # ======================================================

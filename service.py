@@ -24,7 +24,7 @@ class CasoCRUD:
         
         doc_ref = self.collection.add(nuevo_caso)
         caso_id = doc_ref[1].id
-        print(f"âœ“ Caso creado con ID: {caso_id}")
+        # print(f"âœ“ Caso creado con ID: {caso_id}")
         return caso_id
     
     # READ - Leer un caso especÃ­fico
@@ -35,12 +35,12 @@ class CasoCRUD:
         if doc.exists:
             caso = doc.to_dict()
             caso['id'] = doc.id
-            print(f"\n--- Caso {doc.id} ---")
-            print(f"Descripción: {caso['descripcion']}")
-            print(f"Solución: {caso['solucion']}")
+            # print(f"\n--- Caso {doc.id} ---")
+            # print(f"Descripción: {caso['descripcion']}")
+            # print(f"Solución: {caso['solucion']}")
             return caso
         else:
-            print(f"âœ— No existe un caso con ID: {caso_id}")
+            # print(f"âœ— No existe un caso con ID: {caso_id}")
             return None
     
     # READ ALL - Leer todos los casos
@@ -49,14 +49,14 @@ class CasoCRUD:
         docs = self.collection.stream()
         casos = []
         
-        print("\n=== TODOS LOS CASOS ===")
+        # print("\n=== TODOS LOS CASOS ===")
         for doc in docs:
             caso = doc.to_dict()
             caso['id'] = doc.id
             casos.append(caso)
-            print(f"\nID: {doc.id}")
-            print(f"DescripciÃ³n: {caso['descripcion']}")
-            print(f"SoluciÃ³n: {caso['solucion']}")
+            # print(f"\nID: {doc.id}")
+            # print(f"DescripciÃ³n: {caso['descripcion']}")
+            # print(f"SoluciÃ³n: {caso['solucion']}")
         
         if not casos:
             print("No hay casos registrados")
@@ -69,7 +69,7 @@ class CasoCRUD:
         doc_ref = self.collection.document(caso_id)
         
         if not doc_ref.get().exists:
-            print(f"âœ— No existe un caso con ID: {caso_id}")
+            # print(f"âœ— No existe un caso con ID: {caso_id}")
             return False
         
         datos_actualizados = {'fecha_actualizacion': datetime.now()}
@@ -80,7 +80,7 @@ class CasoCRUD:
             datos_actualizados['solucion'] = solucion
         
         doc_ref.update(datos_actualizados)
-        print(f"âœ“ Caso {caso_id} actualizado correctamente")
+        # print(f"âœ“ Caso {caso_id} actualizado correctamente")
         return True
     
     # DELETE - Eliminar un caso
@@ -89,11 +89,11 @@ class CasoCRUD:
         doc_ref = self.collection.document(caso_id)
         
         if not doc_ref.get().exists:
-            print(f"âœ— No existe un caso con ID: {caso_id}")
+            # print(f"âœ— No existe un caso con ID: {caso_id}")
             return False
         
         doc_ref.delete()
-        print(f"âœ“ Caso {caso_id} eliminado correctamente")
+        # print(f"âœ“ Caso {caso_id} eliminado correctamente")
         return True
 
 

@@ -67,7 +67,32 @@ for i, (caso, score) in enumerate(top3, start=1):
     print(f"     Similitud: {round(score*100)}%")
     print()
 
-opcion = int(input("Elige el caso más parecido (1-3): "))
+print("[4] Ninguno se ajusta - Añadir mi propia solución")
+print()
+
+opcion = int(input("Elige una opción (1-4): "))
+
+if opcion == 4:
+    # El usuario quiere añadir su propia solución
+    print("\n--- AÑADIR NUEVA SOLUCIÓN ---")
+    nueva_sol = input("Introduce tu solución: ")
+    
+    # Agregar el nuevo caso a la base de casos en Firestore
+    crud = CasoCRUD()
+    nuevo_id = crud.crear_caso(descripcion=nuevo_caso_texto, solucion=nueva_sol)
+
+    nuevo_caso = {
+        "id": nuevo_id,
+        "descripcion": nuevo_caso_texto,
+        "solucion": nueva_sol,
+        "basado_en": "Solución original"
+    }
+
+    print("\nCaso guardado correctamente:\n")
+    print("Descripción:", nuevo_caso["descripcion"])
+    print("Solución:", nuevo_caso["solucion"])
+    exit()
+
 caso_elegido, score = top3[opcion - 1]
 
 print("\n--- SOLUCIÓN PROPUESTA ---")
@@ -78,25 +103,26 @@ mod = input("¿Quieres modificar la solución? (s/n): ")
 
 if mod.lower() == "s":
     nueva_sol = input("Introduce la solución corregida: ")
+    
+    # ======================================================
+    # 4. RETENER (APRENDER)
+    # ======================================================
+
+    # Agregar el nuevo caso a la base de casos en Firestore
+    crud = CasoCRUD()
+    nuevo_id = crud.crear_caso(descripcion=nuevo_caso_texto, solucion=nueva_sol)
+
+    nuevo_caso = {
+        "id": nuevo_id,
+        "descripcion": nuevo_caso_texto,
+        "solucion": nueva_sol,
+        "basado_en": caso_elegido["descripcion"]
+    }
+
+    print("\nCaso guardado correctamente:\n")
+    print("Descripción:", nuevo_caso["descripcion"])
+    print("Solución:", nuevo_caso["solucion"])
+    print("Basado en:", nuevo_caso["basado_en"])
+    
 else:
     nueva_sol = caso_elegido["solucion"]
-
-# ======================================================
-# 4. RETENER (APRENDER)
-# ======================================================
-
-# Agregar el nuevo caso a la base de casos en Firestore
-crud = CasoCRUD()
-nuevo_id = crud.crear_caso(descripcion=nuevo_caso_texto, solucion=nueva_sol)
-
-nuevo_caso = {
-    "id": nuevo_id,
-    "descripcion": nuevo_caso_texto,
-    "solucion": nueva_sol,
-    "basado_en": caso_elegido["descripcion"]
-}
-
-print("\nCaso guardado correctamente:\n")
-print("Descripción:", nuevo_caso["descripcion"])
-print("Solución:", nuevo_caso["solucion"])
-print("Basado en:", nuevo_caso["basado_en"])

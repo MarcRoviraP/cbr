@@ -32,6 +32,8 @@ class HW_SW_AI_App(ctk.CTk):
 
         self.frame_resultados = ctk.CTkScrollableFrame(self, width=650, height=250)
         self.frame_resultados.pack_forget()
+        self.frame_resultados.bind("<Enter>", self._bind_mousewheel)
+        self.frame_resultados.bind("<Leave>", self._unbind_mousewheel)
 
         self.frame_solucion = ctk.CTkFrame(self)
         self.frame_solucion.pack_forget()
@@ -78,34 +80,63 @@ class HW_SW_AI_App(ctk.CTk):
         query_result = resultado.queries["default"]
 
         self.top3 = []
-        for case_id in query_result.ranking[:3]:
+        for case_id in query_result.ranking:
             caso = query_result.casebase[case_id]
             sim = query_result.similarities[case_id]
-            self.top3.append((caso, sim))
+            if sim > 0:
+                self.top3.append((caso, sim))
 
         self.after(0, self.mostrar_resultados)
 
     def mostrar_resultados(self):
         self.label_bienvenida.configure(text="📊 Casos más parecidos encontrados:")
-        self.frame_resultados.pack(pady=10)
+        self.frame_resultados.pack(pady=10, fill="x")
+
+        # Limpiar resultados anteriores
+        for widget in self.frame_resultados.winfo_children():
+            widget.destroy()
 
         for i, (caso, score) in enumerate(self.top3, start=1):
             frame = ctk.CTkFrame(self.frame_resultados)
-            frame.pack(fill="x", pady=5)
+            frame.pack(fill="x", pady=5, padx=10)
 
-            label = ctk.CTkLabel(frame, text=f"[{i}] {caso['descripcion']}\nSimilitud: {round(score*100)}%")
-            label.pack(side="left", padx=10)
+            label = ctk.CTkLabel(
+                frame,
+                text=f"[{i}] {caso['descripcion']}\nSimilitud: {round(score * 100)}%",
+                justify="left",
+                anchor="w"
+            )
+            label.grid(row=0, column=0, sticky="w", padx=10, pady=5)
 
-            btn = ctk.CTkButton(frame, text="Ver solución", command=lambda c=caso: self.mostrar_solucion(c))
-            btn.pack(side="right", padx=10)
-            
-        
-        frame = ctk.CTkFrame(self.frame_resultados)
-        frame.pack(fill="x", pady=5)
-        label = ctk.CTkLabel(frame, text="Ninguno de estos casos resuelve mi problema")
-        label.pack(side="left", padx=10)
-        btn = ctk.CTkButton(frame, text="Proponer solución", command=lambda c=caso: self.mostrar_cuarta_opcion())
-        btn.pack(side="right", padx=10)
+            btn = ctk.CTkButton(
+                frame,
+                text="Ver solución",
+                command=lambda c=caso: self.mostrar_solucion(c)
+            )
+            btn.grid(row=0, column=1, sticky="e", padx=10)
+
+            frame.grid_columnconfigure(0, weight=1)
+
+        # Opción adicional
+        frame_extra = ctk.CTkFrame(self.frame_resultados)
+        frame_extra.pack(fill="x", pady=10, padx=10)
+
+        label_extra = ctk.CTkLabel(
+            frame_extra,
+            text="Ninguno de estos casos resuelve mi problema",
+            anchor="w"
+        )
+        label_extra.grid(row=0, column=0, sticky="w", padx=10, pady=5)
+
+        btn_extra = ctk.CTkButton(
+            frame_extra,
+            text="Proponer solución",
+            command=self.mostrar_cuarta_opcion
+        )
+        btn_extra.grid(row=0, column=1, sticky="e", padx=10)
+
+        frame_extra.grid_columnconfigure(0, weight=1)
+
         
     def mostrar_cuarta_opcion(self):
         self.frame_resultados.pack_forget()
@@ -146,6 +177,26 @@ class HW_SW_AI_App(ctk.CTk):
 
         self.label_exito.pack(pady=20)
         self.btn_nuevo.pack(pady=10)
+
+    def _on_mousewheel(self, event):
+        if event.num == 4:      # Linux scroll up
+            self.frame_resultados._parent_canvas.yview_scroll(-1, "units")
+        elif event.num == 5:    # Linux scroll down
+            self.frame_resultados._parent_canvas.yview_scroll(1, "units")
+        else:                   # Windows / macOS
+            self.frame_resultados._parent_canvas.yview_scroll(
+                int(-1 * (event.delta / 120)), "units"
+            )
+
+    def _bind_mousewheel(self, event):
+        self.frame_resultados.bind_all("<MouseWheel>", self._on_mousewheel)
+        self.frame_resultados.bind_all("<Button-4>", self._on_mousewheel)
+        self.frame_resultados.bind_all("<Button-5>", self._on_mousewheel)
+
+    def _unbind_mousewheel(self, event):
+        self.frame_resultados.unbind_all("<MouseWheel>")
+        self.frame_resultados.unbind_all("<Button-4>")
+        self.frame_resultados.unbind_all("<Button-5>")
 
     def reiniciar(self):
         self.destroy()

@@ -1,11 +1,24 @@
 import customtkinter as ctk
 import threading
-from main import similitud_descripcion, build, apply_query
+from cbrkit.retrieval import build, apply_query
 from service import CasoCRUD
 
-# ConfiguraciÃ³n visual
+# Configuración visual
 ctk.set_appearance_mode("dark")
 ctk.set_default_color_theme("blue")
+
+# Para una función de similitud más simple basada en coincidencias
+def similitud_descripcion(caso_desc, query_desc):
+    """Calcula similitud básica por palabras en común"""
+    caso_words = set(caso_desc.lower().split())
+    query_words = set(query_desc.lower().split())
+    
+    if not query_words:
+        return 0.0
+    
+    # Palabras en común
+    comunes = caso_words.intersection(query_words)
+    return len(comunes) / len(query_words)
 
 class HW_SW_AI_App(ctk.CTk):
     def __init__(self):

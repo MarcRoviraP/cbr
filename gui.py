@@ -98,8 +98,23 @@ class HW_SW_AI_App(ctk.CTk):
 
             btn = ctk.CTkButton(frame, text="Ver solución", command=lambda c=caso: self.mostrar_solucion(c))
             btn.pack(side="right", padx=10)
+            
+        
+        frame = ctk.CTkFrame(self.frame_resultados)
+        frame.pack(fill="x", pady=5)
+        label = ctk.CTkLabel(frame, text="Ninguno de estos casos resuelve mi problema")
+        label.pack(side="left", padx=10)
+        btn = ctk.CTkButton(frame, text="Proponer solución", command=lambda c=caso: self.mostrar_cuarta_opcion())
+        btn.pack(side="right", padx=10)
+        
+    def mostrar_cuarta_opcion(self):
+        self.frame_resultados.pack_forget()
+        self.label_bienvenida.configure(text="✏️ Describe la solución que propones para tu problema:")
+        self.frame_mejora.pack(pady=10)
+        
 
     def mostrar_solucion(self, caso):
+       
         self.caso_elegido = caso
         self.frame_resultados.pack_forget()
         self.label_bienvenida.configure(text="✅ Solución propuesta:")

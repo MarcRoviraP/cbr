@@ -99,6 +99,18 @@ class HW_SW_AI_App(ctk.CTk):
             btn = ctk.CTkButton(frame, text="Ver solución", command=lambda c=caso: self.mostrar_solucion(c))
             btn.pack(side="right", padx=10)
 
+        # Cuarta opción: Ninguna es válida
+        frame_ninguna = ctk.CTkFrame(self.frame_resultados)
+        frame_ninguna.pack(fill="x", pady=10)
+
+        btn_ninguna = ctk.CTkButton(frame_ninguna, text="Ninguna es válida", command=self.pedir_perdon)
+        btn_ninguna.pack(pady=10)
+
+    def pedir_perdon(self):
+        self.frame_resultados.pack_forget()
+        self.label_bienvenida.configure(text="😔 Lo siento, no encontramos una solución adecuada para tu problema.\n\nPor favor, intenta reformular tu consulta o contacta con soporte técnico.")
+        self.btn_nuevo.pack(pady=10)
+
     def mostrar_solucion(self, caso):
         self.caso_elegido = caso
         self.frame_resultados.pack_forget()

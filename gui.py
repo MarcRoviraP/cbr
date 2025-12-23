@@ -157,6 +157,26 @@ class HW_SW_AI_App(ctk.CTk):
         self.frame_mejora.pack(pady=10)
         
 
+        # Cuarta opción: Ninguna es válida
+        frame_ninguna = ctk.CTkFrame(self.frame_resultados)
+        frame_ninguna.pack(fill="x", pady=10)
+
+        btn_ninguna = ctk.CTkButton(frame_ninguna, text="Ninguna es válida", command=self.pedir_perdon)
+        btn_ninguna.pack(pady=10)
+
+    def pedir_perdon(self):
+        self.frame_resultados.pack_forget()
+        self.label_bienvenida.configure(text="😔 Lo siento, no encontramos una solución adecuada para tu problema.\n\nPor favor, intenta reformular tu consulta o contacta con soporte técnico.")
+        
+        # Re-enable input controls for new search
+        self.text_input.configure(state="normal")
+        self.text_input.delete("1.0", "end")
+        self.btn_enviar.configure(state="normal")
+        
+        # Show nuevo caso button
+        self.btn_nuevo.pack_forget()  # Ensure clean state
+        self.btn_nuevo.pack(pady=10)
+
     def mostrar_solucion(self, caso):
        
         self.caso_elegido = caso

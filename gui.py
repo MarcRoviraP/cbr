@@ -63,7 +63,7 @@ class HW_SW_AI_App(ctk.CTk):
         self.btn_mejorar = ctk.CTkButton(self.frame_solucion, text="Quiero mejorar la solución", command=self.mostrar_mejora)
         self.btn_mejorar.pack(side="left", padx=10)
 
-        self.btn_aceptar = ctk.CTkButton(self.frame_solucion, text="Está bien", command=self.guardar_sin_cambios)
+        self.btn_aceptar = ctk.CTkButton(self.frame_solucion, text="No valorar", command=self.reiniciar)
         self.btn_aceptar.pack(side="right", padx=10)
 
         self.frame_mejora = ctk.CTkFrame(self)
@@ -129,12 +129,19 @@ class HW_SW_AI_App(ctk.CTk):
             widget.destroy()
 
         for i, (caso, score) in enumerate(self.top3, start=1):
+            resultado = ""
+            v1 = caso["valoracion"]
+            vTotal = caso["total_valoraciones"]
+            if vTotal == 0:
+                resultado = "Sin valoraciones"
+            else:
+                resultado = f"{(v1 / vTotal * 100):.2f}%"
             frame = ctk.CTkFrame(self.frame_resultados)
             frame.pack(fill="x", pady=5, padx=10)
 
             label = ctk.CTkLabel(
                 frame,
-                text=f"[{i}] {caso['descripcion']}\nSimilitud: {round(score * 100)}%",
+                text=f"[{i}] {caso['descripcion']}\nSimilitud: {round(score * 100)}%\tValoración: {resultado}",
                 justify="left",
                 anchor="w"
             )
@@ -186,13 +193,24 @@ class HW_SW_AI_App(ctk.CTk):
         
         #Sistema de valoracion
         self.label_valoracion = ctk.CTkLabel(self.frame_solucion, text="¿Te ha servido esta solución?", anchor="w")
-        self.btnLike = ctk.CTkButton(self.frame_solucion, text="👍", command=lambda: self.valorar_solucion(1))
-        self.btnDislike = ctk.CTkButton(self.frame_solucion, text="👎", command=lambda: self.valorar_solucion(-1))
-
-    def valorar_solucion(self,valoracion):
+        self.btnLike = ctk.CTkButton(self.frame_solucion, text="👍", command=lambda: self.valorar_solucion(valoracion=1))
+        self.btnDislike = ctk.CTkButton(self.frame_solucion, text="👎", command=lambda: self.valorar_solucion(valoracion=-1))
+        
         self.label_valoracion.pack(pady=5)
         self.btnLike.pack(side="left", padx=10)
         self.btnDislike.pack(side="right", padx=10)
+        
+
+    def valorar_solucion(self,valoracion):
+        crud = CasoCRUD()
+        crud.valorar_caso(self.caso_elegido["id"], valoracion)
+        self.label_valoracion.configure(text="¡Gracias por tu valoración!")
+        self.btnLike.configure(state="disabled")
+        self.btnDislike.configure(state="disabled")
+        if valoracion == 1:
+            self.btnLike.configure(fg_color = "green")
+        else:
+            self.btnDislike.configure(fg_color = "red")
         
     def mostrar_mejora(self):
         self.frame_solucion.pack_forget()

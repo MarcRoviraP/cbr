@@ -164,7 +164,17 @@ class HW_SW_AI_App(ctk.CTk):
         self.label_bienvenida.configure(text="✅ Solución propuesta:")
         self.frame_solucion.pack(pady=10)
         self.text_solucion.insert("1.0", caso["solucion"])
+        
+        #Sistema de valoracion
+        self.label_valoracion = ctk.CTkLabel(self.frame_solucion, text="¿Te ha servido esta solución?", anchor="w")
+        self.btnLike = ctk.CTkButton(self.frame_solucion, text="👍", command=lambda: self.valorar_solucion(1))
+        self.btnDislike = ctk.CTkButton(self.frame_solucion, text="👎", command=lambda: self.valorar_solucion(-1))
 
+    def valorar_solucion(self,valoracion):
+        self.label_valoracion.pack(pady=5)
+        self.btnLike.pack(side="left", padx=10)
+        self.btnDislike.pack(side="right", padx=10)
+        
     def mostrar_mejora(self):
         self.frame_solucion.pack_forget()
         self.label_bienvenida.configure(text="✏️ Introduce tu versión mejorada:")

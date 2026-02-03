@@ -13,13 +13,15 @@ class CasoCRUD:
         self.collection = db.collection('casos')
     
     # CREATE - Crear un nuevo caso
-    def crear_caso(self, descripcion, solucion=""):
+    def crear_caso(self, descripcion, solucion="", categoria="General"):
         """Crea un nuevo caso en Firestore"""
         nuevo_caso = {
             'descripcion': descripcion,
             'solucion': solucion,
             'fecha_creacion': datetime.now(),
-            'fecha_actualizacion': datetime.now()
+            'fecha_actualizacion': datetime.now(),
+            'valoracion': 0,
+            'categoria': categoria
         }
         
         doc_ref = self.collection.add(nuevo_caso)

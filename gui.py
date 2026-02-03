@@ -27,7 +27,6 @@ class HW_SW_AI_App(ctk.CTk):
         self.geometry("700x600")
         self.resizable(False, False)
 
-        self.casebase = {caso['id']: caso for caso in CasoCRUD().leer_todos_casos()}
         self.top3 = []
         self.caso_elegido = None
 
@@ -40,8 +39,15 @@ class HW_SW_AI_App(ctk.CTk):
         self.text_input = ctk.CTkTextbox(self, height=80, width=600)
         self.text_input.pack(pady=10)
 
-        self.btn_enviar = ctk.CTkButton(self, text="Enviar", command=self.iniciar_busqueda)
-        self.btn_enviar.pack(pady=10)
+        # Frame para contener el botón y el selector
+        self.frame_controles = ctk.CTkFrame(self)
+        self.frame_controles.pack(pady=10)
+
+        self.dd_categoria = ctk.CTkOptionMenu(self.frame_controles, values=["General", "Hardware", "Software", "Redes"], width=150)
+        self.dd_categoria.pack(side="left", padx=10)
+
+        self.btn_enviar = ctk.CTkButton(self.frame_controles, text="Enviar", command=self.iniciar_busqueda)
+        self.btn_enviar.pack(side="right", padx=10)
 
         self.frame_resultados = ctk.CTkScrollableFrame(self, width=650, height=250)
         self.frame_resultados.pack_forget()
@@ -74,17 +80,30 @@ class HW_SW_AI_App(ctk.CTk):
 
     def iniciar_busqueda(self):
         problema = self.text_input.get("1.0", "end").strip()
+        categoria = self.dd_categoria.get()
         if not problema:
             return
+    
+        if not categoria:
+            categoria = "General"
 
         self.label_bienvenida.configure(text="🔍 Buscando casos similares...")
         self.text_input.configure(state="disabled")
         self.btn_enviar.configure(state="disabled")
 
-        threading.Thread(target=self.buscar_casos, args=(problema,)).start()
+        threading.Thread(target=self.buscar_casos, args=(problema, categoria)).start()
 
-    def buscar_casos(self, problema):
-        consulta = {"descripcion": problema}
+    def buscar_casos(self, problema, categoria="General"):
+        consulta = {
+            "descripcion": problema,
+            "categoria": categoria
+        }
+
+        self.casebase = {
+            caso['id']: caso for caso in CasoCRUD().leer_todos_casos()
+            if caso.get("categoria") == categoria
+        }
+
         def sim_func(x, y):
             return similitud_descripcion(x["descripcion"], y["descripcion"])
 
@@ -144,14 +163,14 @@ class HW_SW_AI_App(ctk.CTk):
         btn_extra = ctk.CTkButton(
             frame_extra,
             text="Proponer solución",
-            command=self.mostrar_cuarta_opcion
+            command=self.proponer_solucion
         )
         btn_extra.grid(row=0, column=1, sticky="e", padx=10)
 
         frame_extra.grid_columnconfigure(0, weight=1)
 
         
-    def mostrar_cuarta_opcion(self):
+    def proponer_solucion(self):
         self.frame_resultados.pack_forget()
         self.label_bienvenida.configure(text="✏️ Describe la solución que propones para tu problema:")
         self.frame_mejora.pack(pady=10)
@@ -185,12 +204,13 @@ class HW_SW_AI_App(ctk.CTk):
 
     def guardar_con_mejora(self):
         mejora = self.text_mejora.get("1.0", "end").strip()
-        self.guardar_caso(mejora)
+        categoria = self.dd_categoria.get()
+        self.guardar_caso(mejora, categoria)
 
-    def guardar_caso(self, solucion):
+    def guardar_caso(self, solucion, categoria="General"):
         crud = CasoCRUD()
         problema = self.text_input.get("1.0", "end").strip()
-        nuevo_id = crud.crear_caso(descripcion=problema, solucion=solucion)
+        nuevo_id = crud.crear_caso(descripcion=problema, solucion=solucion, categoria=categoria)
 
         self.frame_mejora.pack_forget()
         self.frame_solucion.pack_forget()

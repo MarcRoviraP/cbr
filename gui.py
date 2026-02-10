@@ -147,20 +147,26 @@ class HW_SW_AI_App(ctk.CTk):
             frame = ctk.CTkFrame(self.frame_resultados)
             frame.pack(fill="x", pady=5, padx=10)
 
-            label = ctk.CTkLabel(
+            labelSimilitud = ctk.CTkLabel(
                 frame,
-                text=f"[{i}] {caso['descripcion']}\nSimilitud: {round(score * 100)}%\tValoración: {resultado}\t\tCategoría: {categoria}",
+                text=f"[{i}] {caso['descripcion']}\nSimilitud: {round(score * 100)}%\tValoración: {resultado}",
                 justify="left",
                 anchor="w"
             )
-            label.grid(row=0, column=0, sticky="w", padx=10, pady=5)
-
+            label2 = ctk.CTkLabel(
+                frame,
+                text=f"Categoría: {categoria}",
+                justify="right",
+                anchor="w"
+            )
+            labelSimilitud.grid(row=0, column=0, sticky="w", padx=10, pady=5)
+            label2.grid(row=0, column=1, sticky="w", padx=10, pady=5)
             btn = ctk.CTkButton(
                 frame,
                 text="Ver solución",
                 command=lambda c=caso: self.mostrar_solucion(c)
             )
-            btn.grid(row=0, column=1, sticky="e", padx=10)
+            btn.grid(row=0, column=2, sticky="e", padx=10)
 
             frame.grid_columnconfigure(0, weight=1)
 

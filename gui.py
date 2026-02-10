@@ -88,8 +88,6 @@ class HW_SW_AI_App(ctk.CTk):
             categoria = "General"
 
         self.label_bienvenida.configure(text="🔍 Buscando casos similares...")
-        #self.text_input.configure(state="disabled")
-        #self.btn_enviar.configure(state="disabled")
 
         threading.Thread(target=self.buscar_casos, args=(problema, categoria)).start()
 
@@ -99,10 +97,15 @@ class HW_SW_AI_App(ctk.CTk):
             "categoria": categoria
         }
 
-        self.casebase = {
-            caso['id']: caso for caso in CasoCRUD().leer_todos_casos()
-            if caso.get("categoria") == categoria
-        }
+        if categoria == "General":
+            self.casebase = {
+                caso['id']: caso for caso in CasoCRUD().leer_todos_casos()
+            }
+        else:
+            self.casebase = {
+                caso['id']: caso for caso in CasoCRUD().leer_todos_casos()
+                if caso.get("categoria") == categoria
+            }
 
         def sim_func(x, y):
             return similitud_descripcion(x["descripcion"], y["descripcion"])
@@ -138,12 +141,15 @@ class HW_SW_AI_App(ctk.CTk):
                 resultado = "Sin valoraciones"
             else:
                 resultado = f"{(v1 / vTotal * 100):.2f}%"
+
+            categoria = caso.get("categoria", "General")
+
             frame = ctk.CTkFrame(self.frame_resultados)
             frame.pack(fill="x", pady=5, padx=10)
 
             label = ctk.CTkLabel(
                 frame,
-                text=f"[{i}] {caso['descripcion']}\nSimilitud: {round(score * 100)}%\tValoración: {resultado}",
+                text=f"[{i}] {caso['descripcion']}\nSimilitud: {round(score * 100)}%\tValoración: {resultado}\t\tCategoría: {categoria}",
                 justify="left",
                 anchor="w"
             )
@@ -240,6 +246,8 @@ class HW_SW_AI_App(ctk.CTk):
         self.label_bienvenida.pack_forget()
         self.text_input.pack_forget()
         self.btn_enviar.pack_forget()
+        self.dd_categoria.pack_forget()
+        self.frame_controles.pack_forget()
 
         self.label_exito.pack(pady=20)
         self.btn_nuevo.pack(pady=10)

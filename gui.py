@@ -88,8 +88,8 @@ class HW_SW_AI_App(ctk.CTk):
             categoria = "General"
 
         self.label_bienvenida.configure(text="🔍 Buscando casos similares...")
-        self.text_input.configure(state="disabled")
-        self.btn_enviar.configure(state="disabled")
+        #self.text_input.configure(state="disabled")
+        #self.btn_enviar.configure(state="disabled")
 
         threading.Thread(target=self.buscar_casos, args=(problema, categoria)).start()
 
@@ -131,6 +131,8 @@ class HW_SW_AI_App(ctk.CTk):
         for i, (caso, score) in enumerate(self.top3, start=1):
             resultado = ""
             v1 = caso["valoracion"]
+            if v1 < 0:
+                v1 = 0
             vTotal = caso["total_valoraciones"]
             if vTotal == 0:
                 resultado = "Sin valoraciones"
@@ -211,6 +213,8 @@ class HW_SW_AI_App(ctk.CTk):
             self.btnLike.configure(fg_color = "green")
         else:
             self.btnDislike.configure(fg_color = "red")
+            
+        self.reiniciar()
         
     def mostrar_mejora(self):
         self.frame_solucion.pack_forget()
@@ -229,7 +233,8 @@ class HW_SW_AI_App(ctk.CTk):
         crud = CasoCRUD()
         problema = self.text_input.get("1.0", "end").strip()
         nuevo_id = crud.crear_caso(descripcion=problema, solucion=solucion, categoria=categoria)
-
+        if not nuevo_id:
+            return 
         self.frame_mejora.pack_forget()
         self.frame_solucion.pack_forget()
         self.label_bienvenida.pack_forget()

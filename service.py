@@ -12,6 +12,19 @@ class CasoCRUD:
     def __init__(self):
         self.collection = db.collection('casos')
     
+    def leer_caso_repetido(self, descripcion, solucion, categoria):
+        query = (
+            self.collection
+            .where("descripcion", "==", descripcion)
+            .where("solucion", "==", solucion)
+            .where("categoria", "==", categoria)
+            .limit(1)
+            .stream()
+        )
+    
+        for _ in query:
+            return True
+        return False
     # CREATE - Crear un nuevo caso
     def crear_caso(self, descripcion, solucion="", categoria="General"):
         """Crea un nuevo caso en Firestore"""
@@ -21,13 +34,28 @@ class CasoCRUD:
             'fecha_creacion': datetime.now(),
             'fecha_actualizacion': datetime.now(),
             'valoracion': 0,
+            'total_valoraciones': 0,
             'categoria': categoria
         }
+        
+        
+        #Comprobar que no exista el caso con categoria, solucion y categoria
+        existeElCaso = self.leer_caso_repetido(descripcion=descripcion,categoria=categoria,solucion=solucion)
+            
+        from tkinter import messagebox
+            
+        if existeElCaso:
+            messagebox.showinfo("Información", "El caso ya existe")
+            return
+    
         
         doc_ref = self.collection.add(nuevo_caso)
         caso_id = doc_ref[1].id
         # print(f"âœ“ Caso creado con ID: {caso_id}")
         return caso_id
+    # READ - Leer un caso especÃ­fico
+    
+        
     
     # READ - Leer un caso especÃ­fico
     def leer_caso(self, caso_id):
@@ -97,6 +125,22 @@ class CasoCRUD:
         doc_ref.delete()
         # print(f"âœ“ Caso {caso_id} eliminado correctamente")
         return True
+    
+
+    def valorar_caso(self, id, valor):
+        doc_ref = self.collection.document(id)
+        doc = doc_ref.get()
+    
+        if not doc.exists:
+            return False
+    
+        data = doc.to_dict()
+    
+        doc_ref.update({
+            "valoracion": data.get("valoracion", 0) + valor,
+            "total_valoraciones": data.get("total_valoraciones", 0) + 1
+        })
+
 
 
 # ============ EJEMPLO DE USO ============
